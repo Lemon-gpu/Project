@@ -3,6 +3,11 @@ import jieba
 from torchtext.data import get_tokenizer
 from collections import Counter
 
+'''
+    dataset_generator is a class, by input json file (in here, we specifically talk about translation2019zh dataset), 
+    it will return a generator, which contains english and chinese sentences in tokenized form
+'''
+
 class dataset_generator():
 
     file_path: str = None
@@ -67,39 +72,16 @@ class dataset_generator():
         chinese = [x for x in chinese if x not in {' ', '\t'}]
         return english, chinese
     
-def create_vocab(sentences: list[list[str]], max_elements: int = None) -> list[str]:
+
+
+def module_test(json_file: str = "Core/translation/data/functional_test.json") -> tuple[list[list[str]]]:
     '''
-    create_vocab use sentences to create vocabulary include default vocabulary without frequency
-
-    Args:
-        sentences (list[list[str]]): input tokenized sentences
-        max_elements (int, optional): token appear in top max_element times. Defaults to None.
-
-    Returns:
-        list[str]: vocabulary
+    module_test is a function, which is used to test the module, return value is a tuple, which contains all english and chinese sentences (in order) in tokenized form
     '''
-    default_vocab = ['<pad>', '<unk>', '<bos>', '<eos>'] # pad: padding, unk: unknown, bos: begin of sentence, eos: end of sentence
-
-    counter = Counter()
-    for sentence in sentences:
-        counter.update(sentence)
-    if max_elements is not None:
-        max_elements -= 4 # the reason for this is that we have 4 default vocab
-    counter = counter.most_common(max_elements)
-
-    words, _ = zip(*counter)
-    return default_vocab + list(words)
-
-def module_test():
-    file_path: str = "Core/translation/data/functional_test.json"
-    dg = dataset_generator(file_path)
-    english, chinese = dg.return_all_sentences()
-    english_vocab = create_vocab(english)
-    chinese_vocab = create_vocab(chinese)
-    print(english_vocab)
-    print(chinese_vocab)
-
-module_test()
+    english, chinese = dataset_generator(json_file).return_all_sentences()
+    print(english[0], '\n', chinese[0])
+    print("Stage 1 passed")
+    return english, chinese
 
 
 
